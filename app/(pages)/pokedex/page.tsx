@@ -41,7 +41,7 @@ export default function Pokedex() {
                   objectFit="contain"
                 />
               </div>
-              <p className="text-xl font-semibold mt-2">{pokemonName}</p>
+              <p className="text-xl font-semibold mt-2">{pokemonIndex}. {pokemonName}</p>
             </div>
           );
         })}
