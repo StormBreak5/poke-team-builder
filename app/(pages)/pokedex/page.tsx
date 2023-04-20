@@ -1,44 +1,51 @@
-'use client'
-
+"use client";
+import { useState, useEffect } from "react";
 import { api } from "@/app/api/pokemon/route";
-import RegionFilter from "@/app/components/RegionFilter";
-import { useEffect, useState } from "react";
+import Image from "next/image";
 
-export default function Pokedex(props: any) {
-    const [pokemon, setPokemon] = useState([])
-    const {selectedRegion} = props
+export default function Pokedex() {
+  const [pokemons, setPokemons] = useState([]);
+  let url = "pokemon?limit=1008";
 
-    useEffect(() => {
-        let url = 'pokemon?limit=100000&offset=0';
+  useEffect(() => {
+    api
+      .get(url)
+      .then((response) => {
+        console.log(response.data.results);
+        setPokemons(response.data.results);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
-        if (selectedRegion === 'kanto') {
-            url = 'pokemon?offset=0&limit=151'
-          } if (selectedRegion === 'johto') {
-            url = 'pokemon?offset=151&limit=100'
-          } if (selectedRegion === 'hoenn') {
-            url = 'pokemon?offset=251&limit=135'
-          } if (selectedRegion === 'sinnoh') {
-            url = 'pokemon?offset=386&limit=107'
-          } if (selectedRegion === 'unova') {
-            url = 'pokemon?offset=493&limit=156'
-          } if (selectedRegion === 'kalos') {
-            url = 'pokemon?offset=649&limit=72'
-          } if (selectedRegion === 'alola') {
-            url = 'pokemon?offset=721&limit=86'
-          } if (selectedRegion === 'galar') {
-            url = 'pokemon?offset=809&limit=89'
-          } if (selectedRegion === 'no-region') {
-            url = 'pokemon?offset=807&limit=2'
-          }
-
-        api.get(url).then(({data}) => {
-            setPokemon(data.results)
-        })
-
-        console.log(pokemon)
-    }, [selectedRegion])
-
-    return (
-        <RegionFilter/>
-    )
+  return (
+    <div className="container mx-auto py-4">
+      <h1 className="text-4xl font-bold mb-4 text-center">All Pokemon</h1>
+      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {pokemons.map((pokemon: any) => {
+          const pokemonIndex =
+            pokemon.url.split("/")[pokemon.url.split("/").length - 2];
+          const pokemonName =
+            pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
+          return (
+            <div
+              key={pokemon.name}
+              className=" rounded-md shadow-lg p-4 flex flex-col justify-center items-center"
+            >
+              <div className="h-28 w-28 relative">
+                <Image
+                  src={`https://pokepast.es/img/pokemon/${pokemonIndex}-0.png`}
+                  alt={pokemon.name}
+                  layout="fill"
+                  objectFit="contain"
+                />
+              </div>
+              <p className="text-xl font-semibold mt-2">{pokemonName}</p>
+            </div>
+          );
+        })}
+      </ul>
+    </div>
+  );
 }
